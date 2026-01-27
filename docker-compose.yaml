@@ -1,0 +1,25 @@
+services:
+  tws:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    container_name: ibkr-tws-prod
+    ports:
+      - "5901:5900"  # VNC
+      - "4003:4001"  # TWS API (live)
+      - "4004:4002"  # TWS API (paper)
+    secrets:
+      - tws
+    restart: unless-stopped
+    volumes:
+      - tws-data:/home/tws/jts
+    environment:
+      - DISPLAY=:0
+      - TZ=Asia/Jerusalem
+
+secrets:
+  tws:
+    file: ./docker/tws.secrets
+
+volumes:
+  tws-data:
