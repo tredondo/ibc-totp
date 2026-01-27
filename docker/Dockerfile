@@ -2,9 +2,6 @@ FROM nixos/nix:latest
 
 ARG IBC_VERSION=3.23.0
 
-# Enable flakes
-RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
-
 # Install packages
 RUN nix-env -f '<nixpkgs>' -iA \
     openjdk21 \
