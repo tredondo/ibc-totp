@@ -15,7 +15,7 @@ if [ ! -f "${TWS_CREDS_FILE}" ]; then
     exit 1
 fi
 
-nohup Xvfb "${DISPLAY}" -br +xinerama -screen 0 2560x1440x24 2>"xvfb-err-${ts}.log" >"xvfb-out-${ts}.log" &
+nohup Xvfb "${DISPLAY}" -br -xinerama -screen 0 2560x1440x24 2>"xvfb-err-${ts}.log" >"xvfb-out-${ts}.log" &
 # wait for X server to start
 sleep 15
 # Allow all X connections
