@@ -25,6 +25,9 @@ sleep 15
 export XAUTHORITY="${HOME}/.Xauthority"
 touch "${XAUTHORITY}"
 
+# Start window manager
+nohup openbox 2>"openbox-err-${ts}.log" >"openbox-out-${ts}.log" &
+
 nohup x11vnc -nopw -display "${DISPLAY}" -ncache 10 -ncache_cr -forever -speeds lan 2>"x11-err-${ts}.log" >"x11-out-${ts}.log" &
 nohup /ibc-start.sh 2>"ibc-err-${ts}.log" >"ibc-out-${ts}.log" &
 
