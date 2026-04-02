@@ -331,5 +331,5 @@ docker compose restart
 ## See Also
 
 - [IBC GitHub](https://github.com/IbcAlpha/IBC) - Upstream project
-- [IBC User Guide](IBC/userguide.md) - Full IBC documentation
+- [IBC User Guide](https://github.com/IbcAlpha/IBC/blob/master/userguide.md) - Full IBC documentation
 - [IBC User Group](https://groups.io/g/ibcalpha) - Community support
