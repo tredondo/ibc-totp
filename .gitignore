@@ -1,1 +1,19 @@
+# Secrets
 docker/tws.secrets
+
+# TWS installation (downloaded)
+tws-jars
+
+# IBC source (cloned from upstream)
+IBC
+
+# Downloaded dependencies (downloaded at build time)
+docker/IBC/lib/*.jar
+
+# Patches folder
+ibc-patches/lib
+
+# IBC build artifacts (when using IBC from upstream)
+IBC/resources/IBC.jar
+IBC/target/
+IBC/dist/

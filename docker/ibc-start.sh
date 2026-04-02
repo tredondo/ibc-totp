@@ -9,6 +9,16 @@ export TWS_VERSION="1044"
 export TWS_SETTINGS_PATH="${HOME}/jts"
 # shellcheck source=tws.secrets
 . "${TWS_CREDS_FILE}"
+
+# Write TOTP secret to config if provided in secrets
+if [[ -n "${TWS_TOTP_SECRET}" ]]; then
+    if grep -q "^TwsTotpSecret=" "${IBC_INI}"; then
+        sed -i "s/^TwsTotpSecret=.*/TwsTotpSecret=${TWS_TOTP_SECRET}/" "${IBC_INI}"
+    else
+        echo "TwsTotpSecret=${TWS_TOTP_SECRET}" >> "${IBC_INI}"
+    fi
+fi
+
 find "${IBC_PATH}" -iname "*.sh" -exec chmod +x {} +
 
 # wait, X11 might not yet be available.

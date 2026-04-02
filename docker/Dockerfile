@@ -29,13 +29,11 @@ RUN mkdir -p ibkr-tws/1044 && \
     echo -e "/home/tws/ibkr-tws/1044\ny\nn" | bash /tmp/tws-installer.sh -- -c && \
     rm /tmp/tws-installer.sh
 
-# Install IBC
-RUN mkdir -p IBC && cd IBC && \
-    curl -sL https://github.com/IbcAlpha/IBC/releases/download/${IBC_VERSION}/IBCLinux-${IBC_VERSION}.zip -O && \
-    unzip IBCLinux-${IBC_VERSION}.zip && \
-    rm IBCLinux-${IBC_VERSION}.zip && \
-    find . -name "*.sh" -type f -exec sed -i '1s|^#!/bin/bash|#!/usr/bin/env bash|' {} \; && \
-    sed -i '309a JAVAFX_SDK=$(find /nix/store -maxdepth 1 -name "*openjfx-modular-sdk*" -type d 2>/dev/null | head -1)\nif [ -n "$JAVAFX_SDK" ] && [ -d "$JAVAFX_SDK/modules" ]; then\n  JAVAFX_CP=$(find "$JAVAFX_SDK/modules" -maxdepth 1 -type d | tr "\\n" ":" | sed "s/:$//")\n  ibc_classpath="${JAVAFX_CP}:${ibc_classpath}"\nfi' scripts/ibcstart.sh
+# Install IBC (from local build with TOTP support)
+USER root
+COPY IBC /home/tws/IBC/
+RUN find /home/tws/IBC -name "*.sh" -type f -exec chmod +x {} \; && \
+    chown -R tws:tws /home/tws/IBC
 
 ENV TZ="Asia/Jerusalem"
 ENV DISPLAY=:0

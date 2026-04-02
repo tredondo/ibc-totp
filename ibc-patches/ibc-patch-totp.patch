@@ -1,0 +1,135 @@
+From 9cad5ebb4e55d988b98a63054a47bffb16890e81 Mon Sep 17 00:00:00 2001
+From: Evgeny Zislis <evgeny.zislis@gmail.com>
+Date: Thu, 2 Apr 2026 22:51:29 +0300
+Subject: [PATCH] Add automatic TOTP 2FA support
+
+- Add googleauth library for TOTP generation
+- Modify SecondFactorAuthenticationDialogHandler to:
+  - Detect Mobile Authenticator prompts
+  - Generate TOTP codes from configured secret
+  - Auto-fill code and click OK
+- Update build.xml to include googleauth jar
+- Update ibcstart.sh to add googleauth to classpath
+
+Signed-off-by: Evgeny Zislis <evgeny.zislis@gmail.com>
+---
+ build.xml                                     |  1 +
+ resources/scripts/ibcstart.sh                 |  2 +-
+ ...condFactorAuthenticationDialogHandler.java | 76 +++++++++++++++++--
+ 3 files changed, 71 insertions(+), 8 deletions(-)
+
+diff --git a/build.xml b/build.xml
+index 8e2d6..8e4fb 100644
+--- a/build.xml
++++ b/build.xml
+@@ -13,6 +13,7 @@
+ 
+     <path id="external.classpath">
+         <fileset dir="${env.IBC_BIN}" includes="**/*.jar"/>
++        <fileset dir="lib" includes="**/*.jar"/>
+     </path>
+ 
+     <target name="clean" description="clean up">
+diff --git a/resources/scripts/ibcstart.sh b/resources/scripts/ibcstart.sh
+index b52d3..1f3b9 100644
+--- a/resources/scripts/ibcstart.sh
++++ b/resources/scripts/ibcstart.sh
+@@ -306,7 +306,7 @@ for jar in "${jars}"/*.jar; do
+ 	fi
+ 	ibc_classpath="${ibc_classpath}${jar}"
+ done
+-ibc_classpath="${ibc_classpath}:$install4j/i4jruntime.jar:${ibc_path}/IBC.jar"
++ibc_classpath="${ibc_classpath}:$install4j/i4jruntime.jar:${ibc_path}/IBC.jar:${ibc_path}/lib/googleauth-1.5.0.jar"
+ 
+ echo -e "Classpath=$ibc_classpath"
+ echo
+diff --git a/src/ibcalpha/ibc/SecondFactorAuthenticationDialogHandler.java b/src/ibcalpha/ibc/SecondFactorAuthenticationDialogHandler.java
+index 18e7a..44bc7 100644
+--- a/src/ibcalpha/ibc/SecondFactorAuthenticationDialogHandler.java
++++ b/src/ibcalpha/ibc/SecondFactorAuthenticationDialogHandler.java
+@@ -18,6 +18,10 @@
+ 
+ package ibcalpha.ibc;
+ 
++import com.warrenstrange.googleauth.GoogleAuthenticator;
++import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
++import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
++
+ import java.awt.Window;
+ import java.awt.event.WindowEvent;
+ import javax.swing.JDialog;
+@@ -53,6 +57,9 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
+                 doReadonlyLogin(window);
+             } else if (secondFactorDeviceSelectionRequired(window)) {
+                 selectSecondFactorDevice(window);
++            } else if (isTotpPrompt(window)) {
++                // This is a TOTP code entry dialog - auto-fill if we have a secret
++                handleTotpEntry(window);
+             } else {
+                 LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+             }
+@@ -116,5 +123,60 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
+         }
+         Utils.logError("could not find second factor device '" + secondFactorDevice + "' in the list");
+     }
+-    
++
++    /**
++     * Checks if this dialog is prompting for a TOTP code (Mobile Authenticator).
++     */
++    private boolean isTotpPrompt(Window window) {
++        // Look for the TOTP prompt text
++        return SwingUtils.findLabel(window, "Enter Mobile Authenticator") != null ||
++               SwingUtils.findLabel(window, "Authenticator app code") != null;
++    }
++
++    /**
++     * Handles automatic TOTP code entry if a secret is configured.
++     */
++    private void handleTotpEntry(Window window) {
++        String totpSecret = Settings.settings().getString("TwsTotpSecret", "");
++
++        if (totpSecret == null || totpSecret.isEmpty()) {
++            Utils.logToConsole("TOTP secret not configured. Please set TwsTotpSecret in config.ini or TwsTotpSecret in secrets file.");
++            LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
++            return;
++        }
++
++        try {
++            Utils.logToConsole("Generating TOTP code...");
++
++            // Create Google Authenticator with default config (uses BASE32 by default)
++            GoogleAuthenticator googleAuth = new GoogleAuthenticator();
++
++            // Generate the TOTP code (returns int)
++            int code = googleAuth.getTotpPassword(totpSecret);
++            String codeStr = String.format("%06d", code);  // Pad to 6 digits
++
++            Utils.logToConsole("TOTP code generated: " + codeStr);
++
++            // Find the text field and enter the code
++            // Based on window structure: twslaunch.trader.common.document.u is a JTextField
++            if (SwingUtils.setTextField(window, 0, codeStr)) {
++                Utils.logToConsole("TOTP code entered in text field");
++
++                // Click OK button
++                if (SwingUtils.clickButton(window, "OK")) {
++                    Utils.logToConsole("Clicked OK button");
++                } else {
++                    Utils.logError("Could not click OK button");
++                }
++            } else {
++                Utils.logError("Could not find TOTP text field");
++            }
++
++        } catch (Exception e) {
++            Utils.logError("Failed to generate TOTP code: " + e.getMessage());
++            e.printStackTrace();
++            LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
++        }
++    }
++
+ }
+-- 
+2.53.0
+

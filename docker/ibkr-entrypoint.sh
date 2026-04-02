@@ -18,7 +18,7 @@ fi
 # Clean up stale X lock files
 rm -f /tmp/.X0-lock /tmp/.X11-unix/X0
 
-nohup Xvfb "${DISPLAY}" -br -xinerama -screen 0 2560x1440x24 2>"xvfb-err-${ts}.log" >"xvfb-out-${ts}.log" &
+nohup Xvfb "${DISPLAY}" -br -screen 0 2560x1440x24 2>"xvfb-err-${ts}.log" >"xvfb-out-${ts}.log" &
 # wait for X server to start
 sleep 15
 # Allow all X connections
@@ -30,7 +30,7 @@ nohup openbox 2>"openbox-err-${ts}.log" >"openbox-out-${ts}.log" &
 # Start panel/taskbar
 nohup tint2 2>"tint2-err-${ts}.log" >"tint2-out-${ts}.log" &
 
-nohup x11vnc -nopw -display "${DISPLAY}" -ncache 10 -ncache_cr -forever -speeds lan 2>"x11-err-${ts}.log" >"x11-out-${ts}.log" &
+nohup x11vnc -nopw -display "${DISPLAY}" -forever 2>"x11-err-${ts}.log" >"x11-out-${ts}.log" &
 nohup /ibc-start.sh 2>"ibc-err-${ts}.log" >"ibc-out-${ts}.log" &
 
 sleep infinity
