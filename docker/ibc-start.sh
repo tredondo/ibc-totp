@@ -23,9 +23,17 @@ find "${IBC_PATH}" -iname "*.sh" -exec chmod +x {} +
 
 # wait, X11 might not yet be available.
 
-while true; do
+MAX_RETRIES=10
+attempt=0
+
+while [[ "${attempt}" -lt "${MAX_RETRIES}" ]]; do
+    attempt=$((attempt + 1))
+    echo "IBC start attempt ${attempt}/${MAX_RETRIES}..."
     sleep 15
-    "${IBC_PATH}/scripts/ibcstart.sh" "${TWS_VERSION}" --tws-path="${TWS_PATH}" --tws-settings-path="${TWS_SETTINGS_PATH}" --ibc-path="${IBC_PATH}" --ibc-ini="${IBC_INI}" --mode=live --java-path="/home/tws" --user="${TWS_USERNAME}" --pw="${TWS_PASSWORD}"
+    if "${IBC_PATH}/scripts/ibcstart.sh" "${TWS_VERSION}" --tws-path="${TWS_PATH}" --tws-settings-path="${TWS_SETTINGS_PATH}" --ibc-path="${IBC_PATH}" --ibc-ini="${IBC_INI}" --mode=live --java-path="/home/tws" --user="${TWS_USERNAME}" --pw="${TWS_PASSWORD}"; then
+        attempt=0
+    fi
 done
 
-echo "*** ibc-start.sh script reached its end ***" 2>&1
+echo "*** IBC failed after ${MAX_RETRIES} consecutive attempts, giving up ***" >&2
+exit 1
