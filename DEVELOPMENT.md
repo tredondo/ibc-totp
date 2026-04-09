@@ -44,7 +44,7 @@ TWS_TOTP_SECRET=your_base32_totp_secret
 
 ### 4. Configure IBC
 
-Edit `docker/ibc-config.ini` as needed:
+Edit `docker/ibc-config.ini` as needed (see the [IBC documentation for the settings](https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini)). You can leave the authentications settings (`IbLoginId`,  `IbPassword`, `TwsTotpSecret`) blank because those in `docker/tws.secrets` take precedence.
 
 ```ini
 # Trading mode: live or paper
@@ -53,7 +53,7 @@ TradingMode=live
 # API port
 OverrideTwsApiPort=7496
 
-# Auto-restart settings
+# Auto-restart settings (in the local timezone, which can be different from the TWS timezone)
 AutoLogoffTime=06:45 AM
 AutoRestartTime=07:00 AM
 
