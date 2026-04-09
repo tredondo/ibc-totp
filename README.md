@@ -21,6 +21,7 @@ This is an **EXTREMELY DANGEROUS** security practice because:
 4. **Restrict file permissions**: `chmod 600 docker/tws.secrets`
 5. **Never commit this file to version control** (it should be gitignored)
 6. **Consider environment-specific secrets** with rotation policies
+7. **Configure per-user access restrictions**: In Client Portal, go to `Settings → Users & Access Rights → Edit the selected user → Continue → ...` and disable **withdrawals** and **position transfers**. This limits what an attacker can do even if credentials are compromised.
 
 ### Docker Secrets Limitation
 
