@@ -15,13 +15,64 @@ This is an **EXTREMELY DANGEROUS** security practice because:
 
 ### Mitigation Recommendations
 
-1. **Use a secrets management solution** (e.g., HashiCorp Vault, AWS Secrets Manager)
-2. **Enable IP restrictions** on your IBKR account
-3. **Use a dedicated paper trading account** for automation, never your live trading account
-4. **Restrict file permissions**: `chmod 600 docker/tws.secrets`
-5. **Never commit this file to version control** (it should be gitignored)
-6. **Consider environment-specific secrets** with rotation policies
-7. **Configure per-user access restrictions**: In Client Portal, go to `Settings → Users & Access Rights → Edit the selected user → Continue → ...` and disable **withdrawals** and **position transfers**. This limits what an attacker can do even if credentials are compromised.
+For production use, you **must** implement additional security layers beyond just protecting the secrets file:
+
+#### 1. Use a Separate Paper Trading Account (Recommended)
+
+Create a dedicated paper trading account for automation. Store separate, paper-trading-only credentials in `docker/tws.secrets`. This limits damage if credentials are compromised to paper trading only.
+
+**Related documentation:**
+- [IBKR Paper Trading](https://www.interactivebrokers.com/en/trading/trading-constraints.php)
+
+#### 2. Use a Dedicated Automation User with Restricted Permissions (Limited Protection)
+
+You can create additional users for your account with granular permissions. Note: Individual accounts are limited to **two usernames** for the same person.
+
+**Setup steps:**
+1. Create a dedicated automation user: `Settings → Account Settings → Users & Access Rights → Users → Add (+)` [^1]
+2. Assign a restricted user role or customize permissions [^2]
+3. Disable funding access (withdrawals, position transfers) [^3]
+4. Set IP restrictions to your server's IP only [^4]
+
+**Important caveats:**
+- An attacker with credentials **could potentially modify their own permissions** unless the system requires additional verification
+- Changes to IP restrictions take effect the **next business day**
+
+**Related documentation:**
+- [Users & Access Rights](https://www.ibkrguides.com/clientportal/uar/userandaccessrights.htm)
+- [Adding a User](https://www.ibkrguides.com/clientportal/uar/addingauser.htm)
+- [User Roles](https://www.ibkrguides.com/clientportal/uar/userroles.htm)
+- [User Access Rights Definitions](https://www.ibkrguides.com/clientportal/uar/uardefinitions.htm)
+- [Funding Access Permissions](https://www.ibkrguides.com/clientportal/uar/uardefinitions.htm#funding-access)
+
+#### 3. Enable IP Restrictions
+
+Restrict trading platform access (TWS, Mobile, Portal Trade) to specific IP addresses. Access from non-whitelisted IPs is limited to administrative functions only.
+
+⚠️ **Note:** Adding or removing IP restrictions takes effect the **following business day**.
+
+**Related documentation:**
+- [IP Restrictions](https://www.ibkrguides.com/clientportal/usersettings/iprestrictions.htm)
+
+#### 4. Configure A/B Authorization (Dual Control)
+
+Require approval from a separate authorized user for funding requests. The automation user can submit requests, but a Primary Authorizer must approve them.
+
+**Related documentation:**
+- [Authorizers](https://www.ibkrguides.com/clientportal/uar/authorizers.htm)
+- [Account Withdrawal Limits](https://www.ibkrguides.com/clientportal/sls/withdrawallimits.htm)
+
+#### 5. Use a Secrets Management Solution
+
+- HashiCorp Vault, AWS Secrets Manager, or similar
+- Rotate credentials regularly
+- Never commit secrets to version control
+
+#### 6. File Permissions
+
+```bash
+chmod 600 docker/tws.secrets
+```
 
 ### Docker Secrets Limitation
 
@@ -142,3 +193,13 @@ ibkr/
 ├── scripts/            # Helper scripts
 └── flake.nix           # Nix dev environment
 ```
+
+---
+
+[^1]: Individual accounts are limited to two usernames for the same person. See [Adding a User](https://www.ibkrguides.com/clientportal/uar/addingauser.htm) for details.
+
+[^2]: User Roles let you define reusable permission templates. See [User Roles](https://www.ibkrguides.com/clientportal/uar/userroles.htm) for details.
+
+[^3]: Funding access can be configured per-user. See [User Access Rights Definitions - Funding Access](https://www.ibkrguides.com/clientportal/uar/uardefinitions.htm#funding-access) for details.
+
+[^4]: IP restrictions apply to trading platforms only. Administrative portal access may still be available from other IPs. See [IP Restrictions](https://www.ibkrguides.com/clientportal/usersettings/iprestrictions.htm) for details.
