@@ -1,22 +1,22 @@
 .DEFAULT_GOAL := help
 
 build: ## Build the Docker container
-	docker-compose build
+	docker compose build
 
 up: ## Start the container
-	docker-compose up -d
+	docker compose up -d
 
 down: ## Stop the container
-	docker-compose down
+	docker compose down
 
 logs: ## Show container logs
-	docker-compose logs -f
+	docker compose logs -f
 
 ps: ## Show running containers
-	docker-compose ps
+	docker compose ps
 
 restart: ## Restart the container
-	docker-compose restart
+	docker compose restart
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
