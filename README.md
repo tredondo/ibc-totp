@@ -22,7 +22,7 @@ For production use, you **must** implement additional security layers beyond jus
 Create a dedicated paper trading account for automation. Store separate, paper-trading-only credentials in `docker/tws.secrets`. This limits damage if credentials are compromised to paper trading only.
 
 **Related documentation:**
-- [IBKR Paper Trading](https://www.interactivebrokers.com/en/trading/trading-constraints.php)
+- [IBKR Paper Trading](https://www.interactivebrokers.com/lib/cstools/faq/#/content/37128282)
 
 #### 2. Use a Dedicated Automation User with Restricted Permissions (Limited Protection)
 
