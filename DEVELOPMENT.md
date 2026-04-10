@@ -208,6 +208,7 @@ cd docker/IBC
 | `AutoLogoffTime` | `06:45 AM` | Daily logoff |
 | `AutoRestartTime` | `07:00 AM` | Daily auto-restart |
 | `TwsTotpSecret` | (empty) | TOTP secret (alternative to secrets file) |
+| `SecondFactorDevice` | (empty) | Device name for 2FA selection (if multiple devices); leave empty for single device |
 
 For full config options, see the [sample `config.ini`](https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini) in the IBC source.
 
