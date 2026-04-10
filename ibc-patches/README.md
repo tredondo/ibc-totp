@@ -24,7 +24,7 @@ After making changes to IBC source:
 cd IBC
 git add -A
 git commit -m "Your commit message"
-git format-patch -1 --stdout > ../ibkr/ibc-patches/ibc-patch-description.patch
+git format-patch -1 --stdout > ../ibc-totp/ibc-patches/ibc-patch-description.patch
 ```
 
 ## For Full Upgrade Instructions

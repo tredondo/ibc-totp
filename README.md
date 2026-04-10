@@ -146,7 +146,6 @@ TWS_TOTP_SECRET=your_base32_totp_secret
 ### 2. Run
 
 ```bash
-cd docker
 docker compose up -d
 ```
 
@@ -181,17 +180,17 @@ docker compose up -d
 ## What's Inside
 
 ```
-ibkr/
+ibc-totp/
 ├── docker/              # Docker deployment
 │   ├── Dockerfile       # Container build
-│   ├── docker-compose.yaml
-│   ├── tws.secrets     # Credentials (gitignored!)
-│   ├── ibc-config.ini  # IBC settings
-│   └── IBC/            # Built IBC with TOTP support
-├── IBC/                # IBC source (upstream fork with TOTP patch)
-├── ibc-patches/        # Source patches
-├── scripts/            # Helper scripts
-└── flake.nix           # Nix dev environment
+│   ├── tws.secrets      # Credentials (gitignored!)
+│   ├── ibc-config.ini   # IBC settings
+│   └── IBC/             # Built IBC with TOTP support
+├── IBC/                 # IBC source (upstream fork with TOTP patch)
+├── ibc-patches/         # Source patches
+├── scripts/             # Helper scripts
+├── docker-compose.yaml  # Container orchestration
+└── flake.nix            # Nix dev environment
 ```
 
 ---
