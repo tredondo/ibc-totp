@@ -175,7 +175,7 @@ docker compose up -d
 
 | Document | Purpose |
 |----------|---------|
-| **DEVELOPMENT.md** | Full setup, installation, and development guide |
+| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Full setup, installation, and development guide |
 
 ## What's Inside
 
