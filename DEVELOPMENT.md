@@ -54,7 +54,8 @@ TradingMode=live
 OverrideTwsApiPort=7496
 
 # Auto-restart settings (in the local timezone, which can be different from the TWS timezone)
-AutoLogoffTime=06:45 AM
+# https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini#L592-L593
+# AutoLogoffTime=06:45 AM
 AutoRestartTime=07:00 AM
 
 # Security settings
@@ -209,7 +210,7 @@ cd docker/IBC
 | `AutoRestartTime` | `07:00 AM` | Daily auto-restart |
 | `TwsTotpSecret` | (empty) | TOTP secret (alternative to secrets file) |
 
-For full config options, see the sample `config.ini` in the IBC source.
+For full config options, see the [sample `config.ini`](https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini) in the IBC source.
 
 ## Upgrading IBC
 
