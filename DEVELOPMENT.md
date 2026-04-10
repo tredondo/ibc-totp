@@ -8,7 +8,7 @@ This guide covers:
 
 ## Prerequisites
 
-- **Docker** (20.10+) and Docker Compose
+- **[Docker](https://docs.docker.com/engine/install/)** (20.10+) and Docker Compose
 - **Make** (optional, for convenience commands)
 - **Git**
 - For development: **Nix** (for reproducible builds)
@@ -19,10 +19,18 @@ This guide covers:
 
 ```bash
 git clone <this-repo-url>
-cd ibkr
+cd ibc-totp
 ```
 
-### 2. Create Credentials File
+### 2. Get Your TOTP Secret
+
+1. Log into IBKR Account Management
+2. Go to Settings → Security → Secure Login System
+3. If you have mobile authenticator setup, look for option to view secret
+4. The secret is Base32 encoded (letters A-Z, digits 2-7)
+5. Example: `JBSWY3DPEHPK3PXP`
+
+### 3. Create Credentials File
 
 Create `docker/tws.secrets`:
 
@@ -34,17 +42,9 @@ TWS_TOTP_SECRET=your_base32_totp_secret
 
 > ⚠️ **SECURITY**: Run `chmod 600 docker/tws.secrets` to restrict access.
 
-### 3. Get Your TOTP Secret
-
-1. Log into IBKR Account Management
-2. Go to Settings → Security → Secure Login System
-3. If you have mobile authenticator setup, look for option to view secret
-4. The secret is Base32 encoded (letters A-Z, digits 2-7)
-5. Example: `JBSWY3DPEHPK3PXP`
-
 ### 4. Configure IBC
 
-Edit `docker/ibc-config.ini` as needed:
+Edit `docker/ibc-config.ini` as needed (see the [IBC documentation for the settings](https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini)). You can leave the authentications settings (`IbLoginId`,  `IbPassword`, `TwsTotpSecret`) blank because those in `docker/tws.secrets` take precedence.
 
 ```ini
 # Trading mode: live or paper
@@ -53,8 +53,9 @@ TradingMode=live
 # API port
 OverrideTwsApiPort=7496
 
-# Auto-restart settings
-AutoLogoffTime=06:45 AM
+# Auto-restart settings (in the local timezone, which can be different from the TWS timezone)
+# https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini#L592-L593
+# AutoLogoffTime=06:45 AM
 AutoRestartTime=07:00 AM
 
 # Security settings
@@ -208,7 +209,7 @@ cd docker/IBC
 | `AutoRestartTime` | `07:00 AM` | Daily auto-restart |
 | `TwsTotpSecret` | (empty) | TOTP secret (alternative to secrets file) |
 
-For full config options, see the sample `config.ini` in the IBC source.
+For full config options, see the [sample `config.ini`](https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini) in the IBC source.
 
 ## Upgrading IBC
 

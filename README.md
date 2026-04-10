@@ -82,13 +82,13 @@ chmod 600 docker/tws.secrets
 
 # IBKR TWS Docker Setup
 
-Runs Interactive Brokers' Trader Workstation (TWS) in a Docker container with IBC controller for automated, hands-free trading.
+Runs Interactive Brokers' Trader Workstation (TWS) in a Docker container with IB Controller for automated, hands-free trading.
 
 ## What This Is
 
 This project containerizes:
-- **Trader Workstation (TWS)** - IBKR's trading platform
-- **IBC** (Interactive Brokers Controller) - Automates TWS login and dialog handling
+- IBKR's [**Trader Workstation (TWS)**](https://www.interactivebrokers.com/en/trading/download-tws.php?p=offline-stable) - trading platform
+- [**IBC** (Interactive Brokers Controller)](https://github.com/IbcAlpha/IBC/) - Automates TWS login and dialog handling
 - **Automatic 2FA** - TOTP code generation for hands-free login
 - **VNC Access** - Remote desktop via port 5901
 - **X11/Xvfb** - Headless GUI operation
