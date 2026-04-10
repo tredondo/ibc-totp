@@ -70,7 +70,6 @@ make build
 make up
 
 # Or directly
-cd docker
 docker compose up -d
 ```
 
@@ -230,12 +229,12 @@ For full config options, see the sample `config.ini` in the IBC source.
 2. **Apply our TOTP patch**:
    ```bash
    cd IBC-new
-   git am < ../ibkr/ibc-patches/ibc-patch-totp.patch
+   git am < ../ibc-totp/ibc-patches/ibc-patch-totp.patch
    ```
 
 3. **Download dependencies**:
    ```bash
-   ./ibkr/scripts/download-deps.sh ibc
+   ./ibc-totp/scripts/download-deps.sh ibc
    ```
 
 4. **Build**:
@@ -245,20 +244,20 @@ For full config options, see the sample `config.ini` in the IBC source.
 
 5. **Copy to project**:
    ```bash
-   cp resources/IBC.jar ../ibkr/docker/IBC/
-   cp lib/*.jar ../ibkr/docker/IBC/lib/
-   cp -r resources/scripts ../ibkr/docker/IBC/
+   cp resources/IBC.jar ../ibc-totp/docker/IBC/
+   cp lib/*.jar ../ibc-totp/docker/IBC/lib/
+   cp -r resources/scripts ../ibc-totp/docker/IBC/
    ```
 
 6. **Replace IBC source in project**:
    ```bash
-   rm -rf ../ibkr/IBC
-   mv ../IBC-new ../ibkr/IBC
+   rm -rf ../ibc-totp/IBC
+   mv ../IBC-new ../ibc-totp/IBC
    ```
 
 7. **Rebuild Docker image**:
    ```bash
-   cd ../ibkr/docker
+   cd ../ibc-totp/docker
    docker compose build
    docker compose up -d
    ```
@@ -266,27 +265,28 @@ For full config options, see the sample `config.ini` in the IBC source.
 ## Project Structure
 
 ```
-ibkr/
-├── docker/                      # Docker deployment
-│   ├── Dockerfile              # Container image
-│   ├── docker-compose.yaml     # Container orchestration
+ibc-totp/
+├── docker/                    # Docker deployment
+│   ├── Dockerfile             # Container image
 │   ├── tws.secrets            # Credentials (NOT committed!)
-│   ├── ibc-config.ini          # IBC configuration
+│   ├── ibc-config.ini         # IBC configuration
 │   ├── ibkr-entrypoint.sh     # Container entrypoint
 │   ├── ibc-start.sh           # IBC + TWS launcher
+│   ├── java-wrapper.sh        # Delegates to Nix-installed JVM
 │   └── IBC/                   # Built IBC with TOTP support
 │       ├── IBC.jar
 │       ├── lib/               # googleauth-*.jar
 │       └── scripts/
-├── IBC/                        # IBC source (forked from upstream)
+├── IBC/                       # IBC source (upstream clone for TOTP patching)
 │   ├── src/                   # Java source
 │   ├── build.xml              # Ant build file
 │   ├── resources/             # IBC.jar output
 │   └── dist/                  # Distribution zip files
 ├── ibc-patches/               # Patches applied to upstream IBC
-│   └── ibc-patch-totp.patch  # TOTP support patch
+│   └── ibc-patch-totp.patch   # TOTP support patch
 ├── scripts/
 │   └── download-deps.sh       # Download external libs
+├── docker-compose.yaml        # Container orchestration
 ├── flake.nix                  # Nix dev environment
 └── DEVELOPMENT.md             # This file
 ```
